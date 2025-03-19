@@ -17,8 +17,50 @@ while (true) {
     }
     await fs.mkdir("out")
 
-    let cacheBusting = {}
+    let nav = []
+    for (const shortFilePath of await fs.readdir("content", rdOpts)) {
+        if (shortFilePath.includes("/") && shortFilePath.charAt(0) !== "_") {
+            let parts = shortFilePath.split("/")
+            let subjectName = parts[0]
+            let itemName = parts[1]?.replace(".md", "")
+    
+            let navItem = nav.find(x => x.subject === subjectName)
+            if (!navItem) {
+                navItem = {
+                    subject: subjectName,
+                    items: []
+                }
+                nav.push(navItem)
+            }
+            navItem.items.push(itemName)
+        }
+    }
+    nav.forEach(navItem => navItem.items.sort())
+    nav.sort((a,b) => a.subject.localeCompare(b.subject))
+    let htmlMainNav = '<section><details><summary>Innehåll</summary>' + nav.reduce((html, navItem) => {
+        let contentTypeSlug = navItem.subject.replace(/ /g, "-")
+            .toLowerCase()
+            .replace(/[åä]/,"a")
+            .replace(/[ö]/,"o")
+        html += '<section>'
+        html += '  <details>'
+        html += '    <summary><a href="/' + contentTypeSlug + '">' + navItem.subject + '</a></summary>'
+        for (const pageItemName of navItem.items) {
+            let nameSlug = pageItemName.replace(/ /g, "-")
+                .toLowerCase()
+                .replace(/[åä]/,"a")
+                .replace(/[ö]/,"o")
+            html += '    <section>'
+            html += '      <a href="/' + contentTypeSlug + '/' + nameSlug + '">' + pageItemName + '</a>'
+            html += '    </section>'
+        }
+        html += '  </details>'
+        html += '</section>'
+        return html
+    },"") + '</details></section>'
+    console.log(JSON.stringify(nav, null, 2))
 
+    let cacheBusting = {}
     for (const filePath of await fs.readdir("source", rdOpts)) {
         let sourceMatch = filePath.match(/^(?:(.*)\/)?([^/]+)\.(css|js)$/)
         if (sourceMatch) {
@@ -66,7 +108,7 @@ while (true) {
                 .replace(/[åä]/,"a")
                 .replace(/[ö]/,"o")
 
-            // Files that should be copied as they are, possible with cache busting
+            // Files that should be copied almost as they are, possible with cache busting
             let srcFilePath = ["source", path, filename].filter(x => x.trim()).join("/") + "." + extension
             let outPath = ["out", pathSlug].filter(x => x.trim()).join("/")
             await fs.mkdir(outPath, { recursive: true })
@@ -79,6 +121,10 @@ while (true) {
                     textData = textData.replace(new RegExp('"/' + [pathSlug,name].filter(x => x.trim()).join("/") + '"', "g"), "/" + [pathSlug,busted[name]].filter(x => x.trim()).join("/"))
                 }
             }
+
+            textData = textData
+                .replace(/{{main-nav}}/g, htmlMainNav)
+
             let outFilePath = ["out", pathSlug, finalFilename + "." + extension].filter(x => x.trim()).join("/")
 
             if (filename.charAt(0) !== "_") {
@@ -140,6 +186,7 @@ while (true) {
             let html = contentTemplate
                 .replace(/{{title}}/g, settings.title)
                 .replace(/{{content}}/g, htmlContent)
+                .replace(/{{main-nav}}/g, htmlMainNav)
 
             let outPath = ["out", contentTypeSlug, nameSlug].map(x => x.trim()).join("/")
             let outFilePath = ["out", contentTypeSlug, nameSlug, "index.html"].map(x => x.trim()).join("/")
