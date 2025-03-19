@@ -37,12 +37,12 @@ while (true) {
     }
     nav.forEach(navItem => navItem.items.sort())
     nav.sort((a,b) => a.subject.localeCompare(b.subject))
-    let htmlMainNav = '<section><details><summary>Innehåll</summary>' + nav.reduce((html, navItem) => {
+    let htmlMainNav = '<section class="main-nav"><details><summary>Innehåll</summary>' + nav.reduce((html, navItem) => {
         let contentTypeSlug = navItem.subject.replace(/ /g, "-")
             .toLowerCase()
             .replace(/[åä]/,"a")
             .replace(/[ö]/,"o")
-        html += '<section>'
+        html += '<section class="main-nav__content-type">'
         html += '  <details>'
         html += '    <summary><a href="/' + contentTypeSlug + '">' + navItem.subject + '</a></summary>'
         for (const pageItemName of navItem.items) {
@@ -50,7 +50,7 @@ while (true) {
                 .toLowerCase()
                 .replace(/[åä]/,"a")
                 .replace(/[ö]/,"o")
-            html += '    <section>'
+            html += '    <section class="main-nav__content-item">'
             html += '      <a href="/' + contentTypeSlug + '/' + nameSlug + '">' + pageItemName + '</a>'
             html += '    </section>'
         }
@@ -58,7 +58,6 @@ while (true) {
         html += '</section>'
         return html
     },"") + '</details></section>'
-    console.log(JSON.stringify(nav, null, 2))
 
     let cacheBusting = {}
     for (const filePath of await fs.readdir("source", rdOpts)) {
@@ -135,8 +134,8 @@ while (true) {
         }
     }
 
-    let contentTemplate = templates["_default-content.html"]
     for (const shortFilePath of await fs.readdir("content", rdOpts)) {
+        console.log(shortFilePath)
         let contentMatch = shortFilePath.match(/^(.*)\/([^/]+)\.md$/)
         if (contentMatch) {
             let contentType = contentMatch[1]
@@ -183,6 +182,11 @@ while (true) {
                     .replace(/\*\*(.*)\*\*/, "<strong>$1</strong>"))
                 .join("\n")
 
+            let contentTemplate = templates["_default-content.html"]
+            if (name.indexOf("_index") === 0) {
+                contentTemplate = templates["_default-index.html"]
+            }
+
             let html = contentTemplate
                 .replace(/{{title}}/g, settings.title)
                 .replace(/{{content}}/g, htmlContent)
@@ -190,7 +194,11 @@ while (true) {
 
             let outPath = ["out", contentTypeSlug, nameSlug].map(x => x.trim()).join("/")
             let outFilePath = ["out", contentTypeSlug, nameSlug, "index.html"].map(x => x.trim()).join("/")
-            await fs.mkdir(outPath, { recursive: true })
+            if (name.indexOf("_index") === 0) {
+                outFilePath = ["out", contentTypeSlug, "index.html"].map(x => x.trim()).join("/")
+            } else {
+                await fs.mkdir(outPath, { recursive: true })
+            }
             await fs.writeFile(outFilePath, html)
         }
     }

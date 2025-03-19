@@ -2,3 +2,20 @@
     display:grid;
     grid-template-columns: 3fr 1fr;
 }
+
+.main-nav {
+    position: absolute;
+    right: 1rem;
+    background-color: white;
+    padding: 0.5rem;
+    border: solid 1px black;
+    cursor:default;
+}
+
+.main-nav__content-type {
+    padding-left: 1rem;
+}
+
+.main-nav__content-item {
+    padding-left: 2rem;
+}
