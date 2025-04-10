@@ -1,9 +1,32 @@
 import fs from "fs/promises"
 import { createHash } from "node:crypto"
+import { createServer } from "http"
 
 const rdOpts = {
     recursive: true
 }
+
+createServer(async (req, res) => {
+    try {
+        let url = req.url
+        let fileEndingMatch = url.match(/\.(css|html)$/)
+        if (!fileEndingMatch) {
+            url += (url.charAt(url.length - 1) === "/" ? "" : "/") + "index.html"
+        }
+        let data = await fs.readFile("out" + url)
+
+        let contentType = "text/html"
+        fileEndingMatch = url.match(/\.(css|html)$/)
+        if (fileEndingMatch && fileEndingMatch[1] === "css") {
+            contentType = "text/css"
+        }
+        res.writeHead(200, { "Content-Type": contentType });
+        res.end(data);
+    } catch (err) {
+        res.writeHead(404);
+        res.end("Not found");
+    }
+}).listen(8000)
 
 while (true) {
     console.log("Rebuilding everything.")
