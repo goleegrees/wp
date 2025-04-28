@@ -68,7 +68,7 @@ while (true) {
         html += '<section class="main-nav__content-type">'
         html += '  <details>'
         html += '    <summary><a href="/' + contentTypeSlug + '">' + navItem.subject + '</a></summary>'
-        for (const pageItemName of navItem.items) {
+        for (const pageItemName of navItem.items.filter(x => !x.match(/_index$/))) {
             let nameSlug = pageItemName.replace(/ /g, "-")
                 .toLowerCase()
                 .replace(/[åä]/,"a")
@@ -158,7 +158,6 @@ while (true) {
     }
 
     for (const shortFilePath of await fs.readdir("content", rdOpts)) {
-        console.log(shortFilePath)
         let contentMatch = shortFilePath.match(/^(.*)\/([^/]+)\.md$/)
         if (contentMatch) {
             let contentType = contentMatch[1]
