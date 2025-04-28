@@ -184,7 +184,7 @@ if (process.argv.length === 4) {
                 let settings = contentParts[0]
                     .split(/[\r\n|\n|\r]/)
                     .filter(x => x.trim())
-                    .map(row => row.match(/^(.*)=(.*)$/))
+                    .map(row => row.match(/^(.*?)=(.*)$/))
                     .reduce((acc, match) => {
                         acc[match[1].trim()] = match[2].trim()
                             .replace(/^['"]/g, "")
@@ -212,9 +212,10 @@ if (process.argv.length === 4) {
                 if (name.indexOf("_index") === 0) {
                     contentTemplate = templates["_default-index.html"]
                 }
-    
+
                 let html = contentTemplate
                     .replace(/{{title}}/g, settings.title)
+                    .replace(/{{featured_image}}/g, settings.featured_image)
                     .replace(/{{content}}/g, htmlContent)
                     .replace(/{{main-nav}}/g, htmlMainNav)
     
