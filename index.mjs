@@ -206,7 +206,8 @@ if (process.argv.length === 4) {
                         .replace(/^([^<].*)$/, "<p>$1</p>")
                         .replace(/\*(.*)\*/, "<em>$1</em>")
                         .replace(/\*\*(.*)\*\*/, "<strong>$1</strong>")
-                        .replace(/!\[(.+?)\]\((.+?)(?: "?(.+?)"?)?\)/, '<img class="inline-image" src="$2" alt="$1" title="$3">'))
+                        .replace(/!\[(.+?)\]\((.+?)(?: "?(.+?)"?)?\)/, '<img class="inline-image" src="$2" alt="$1" title="$3">')
+                        .replace(/\[(.+?)\]\((.+?)\)/, '<a href="$2">$1</a>'))
                     .join("\n")
     
                 let contentTemplate = templates["_default-content.html"]
