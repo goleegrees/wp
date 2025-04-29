@@ -84,3 +84,7 @@ html, body {
     max-width: 42rem;
     margin: 0 auto;
 }
+
+.inline-image {
+    max-width: 100%;
+}
