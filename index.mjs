@@ -213,11 +213,17 @@ if (process.argv.length === 4) {
                     contentTemplate = templates["_default-index.html"]
                 }
 
+                let htmlBreadcrumbs = `<section class="breadcrumbs"><a href="/">Hjelmsby och Hjelmsberg</a> | ${contentType}</section>`
+                if (name.indexOf("_index") !== 0) {
+                    htmlBreadcrumbs = `<section class="breadcrumbs"><a href="/">Hjelmsby och Hjelmsberg</a> | <a href="/${contentTypeSlug}">${contentType}</a> | ${name}</section>`
+                }
+
                 let html = contentTemplate
                     .replace(/{{title}}/g, settings.title)
                     .replace(/{{featured_image}}/g, settings.featured_image)
                     .replace(/{{content}}/g, htmlContent)
                     .replace(/{{main-nav}}/g, htmlMainNav)
+                    .replace(/{{breadcrumbs}}/g, htmlBreadcrumbs)
     
                 let outPath = [rootOutPath, contentTypeSlug, nameSlug].map(x => x.trim()).join("/")
                 let outFilePath = [rootOutPath, contentTypeSlug, nameSlug, "index.html"].map(x => x.trim()).join("/")

@@ -78,3 +78,9 @@ html, body {
     text-decoration: none;
     color: black;
 }
+
+.breadcrumbs {
+    padding: 0.5rem;
+    max-width: 42rem;
+    margin: 0 auto;
+}
