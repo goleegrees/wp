@@ -46,7 +46,7 @@ if (process.argv.length === 4) {
     
         let nav = []
         for (const shortFilePath of await fs.readdir(rootContentPath, rdOpts)) {
-            if (shortFilePath.includes("/") && shortFilePath.charAt(0) !== "_") {
+            if (shortFilePath.includes("/") && shortFilePath.indexOf("_index") === -1) {
                 let parts = shortFilePath.split("/")
                 let subjectName = parts[0]
                 let itemName = parts[1]?.replace(".md", "")
@@ -72,7 +72,7 @@ if (process.argv.length === 4) {
             html += '<section class="main-nav__content-type">'
             html += '  <details>'
             html += '    <summary><a href="/' + contentTypeSlug + '">' + navItem.subject + '</a></summary>'
-            for (const pageItemName of navItem.items.filter(x => !x.match(/_index$/))) {
+            for (const pageItemName of navItem.items) {
                 let nameSlug = pageItemName.replace(/ /g, "-")
                     .toLowerCase()
                     .replace(/[åä]/,"a")
@@ -160,7 +160,9 @@ if (process.argv.length === 4) {
                 }
             }
         }
-    
+
+        let allContent = {}
+        let contentPerType = {}
         for (const shortFilePath of await fs.readdir(rootContentPath, rdOpts)) {
             let contentMatch = shortFilePath.match(/^(.*)\/([^/]+)\.md$/)
             if (contentMatch) {
@@ -191,8 +193,28 @@ if (process.argv.length === 4) {
                             .replace(/['"]$/g, "")
                         return acc
                     },{})
+
+                let contentItem = {
+                    contentType,
+                    contentTypeSlug,
+                    name,
+                    nameSlug,
+                    settings,
+                    data: contentParts[1]
+                }
+                allContent[shortFilePath] = contentItem
+
+                if (!contentPerType[contentTypeSlug]) {
+                    contentPerType[contentTypeSlug] = []
+                }
+                contentPerType[contentTypeSlug].push(contentItem)
+            }
+        }
     
-                let contentRows = contentParts[1]
+        for (const shortFilePath of await fs.readdir(rootContentPath, rdOpts)) {
+            let contentItem = allContent[shortFilePath]
+            if (contentItem) {
+                let contentRows = contentItem.data
                     .split(/[\r\n|\n|\r]/)
                     .filter(x => x.trim())
                     .map(x => x.trim())
@@ -203,34 +225,55 @@ if (process.argv.length === 4) {
                         .replace(/### (.*)$/, "<h3>$1</h3>")
                         .replace(/## (.*)$/, "<h2>$1</h2>")
                         .replace(/# (.*)$/, "<h1>$1</h1>")
-                        .replace(/^([^<].*)$/, "<p>$1</p>")
-                        .replace(/\*(.*)\*/, "<em>$1</em>")
+                        .replace(/\*\*\*(.*)\*\*\*/, "<strong><em>$1</em></strong>")
                         .replace(/\*\*(.*)\*\*/, "<strong>$1</strong>")
+                        .replace(/\*(.*)\*/, "<em>$1</em>")
                         .replace(/!\[(.+?)\]\((.+?)(?: "?(.+?)"?)?\)/, '<img class="inline-image" src="$2" alt="$1" title="$3">')
-                        .replace(/\[(.+?)\]\((.+?)\)/, '<a href="$2">$1</a>'))
+                        .replace(/\[(.+?)\]\((.+?)\)/, '<a href="$2">$1</a>')
+                        .replace(/>(.*)/, "<blockquote><p>$1</p></blockquote>")
+                        .replace(/^([^<].*)$/, "<p>$1</p>"))
                     .join("\n")
+                        .replace(/<\/blockquote>\n<blockquote>/gs, "")
     
                 let contentTemplate = templates["_default-content.html"]
-                if (name.indexOf("_index") === 0) {
+                if (contentItem.name.indexOf("_index") === 0) {
                     contentTemplate = templates["_default-index.html"]
                 }
 
-                let htmlBreadcrumbs = `<section class="breadcrumbs"><a href="/">Hjelmsby och Hjelmsberg</a> | ${contentType}</section>`
-                if (name.indexOf("_index") !== 0) {
-                    htmlBreadcrumbs = `<section class="breadcrumbs"><a href="/">Hjelmsby och Hjelmsberg</a> | <a href="/${contentTypeSlug}">${contentType}</a> | ${name}</section>`
+                let htmlBreadcrumbs = `<section class="breadcrumbs"><a href="/">Hjelmsby och Hjelmsberg</a> | ${contentItem.contentType}</section>`
+                if (contentItem.name.indexOf("_index") !== 0) {
+                    htmlBreadcrumbs = `<section class="breadcrumbs"><a href="/">Hjelmsby och Hjelmsberg</a> | <a href="/${contentItem.contentTypeSlug}">${contentItem.contentType}</a> | ${contentItem.name}</section>`
+                }
+
+                let htmlContentIndex = ""
+                if (contentItem.name.indexOf("_index") === 0) {
+                    let collection = contentPerType[contentItem.contentTypeSlug]
+                    if (collection) {
+                        htmlContentIndex += "<section>"
+                        for (const indexItem of collection.filter(x => x.name !== "_index")) {
+                            htmlContent += `  <a class="index-card__link-container" href="/${indexItem.contentTypeSlug}/${indexItem.nameSlug}">`
+                            htmlContent += '    <section class="index-card">'
+                            htmlContent += `      <img class="inline-image" src="${indexItem.settings.featured_image}">`
+                            htmlContent += `      <h3>${indexItem.settings.title}</h3>`
+                            htmlContent += "    </section>"
+                            htmlContent += "  </a>"
+                        }
+                        htmlContentIndex += "</section>"
+                    }
                 }
 
                 let html = contentTemplate
-                    .replace(/{{title}}/g, settings.title)
-                    .replace(/{{featured_image}}/g, settings.featured_image)
+                    .replace(/{{title}}/g, contentItem.settings.title)
+                    .replace(/{{featured_image}}/g, contentItem.settings.featured_image)
                     .replace(/{{content}}/g, htmlContent)
                     .replace(/{{main-nav}}/g, htmlMainNav)
                     .replace(/{{breadcrumbs}}/g, htmlBreadcrumbs)
+                    .replace(/{{content-index}}/g, htmlContentIndex)
     
-                let outPath = [rootOutPath, contentTypeSlug, nameSlug].map(x => x.trim()).join("/")
-                let outFilePath = [rootOutPath, contentTypeSlug, nameSlug, "index.html"].map(x => x.trim()).join("/")
-                if (name.indexOf("_index") === 0) {
-                    outFilePath = [rootOutPath, contentTypeSlug, "index.html"].map(x => x.trim()).join("/")
+                let outPath = [rootOutPath, contentItem.contentTypeSlug, contentItem.nameSlug].map(x => x.trim()).join("/")
+                let outFilePath = [rootOutPath, contentItem.contentTypeSlug, contentItem.nameSlug, "index.html"].map(x => x.trim()).join("/")
+                if (contentItem.name.indexOf("_index") === 0) {
+                    outFilePath = [rootOutPath, contentItem.contentTypeSlug, "index.html"].map(x => x.trim()).join("/")
                 } else {
                     await fs.mkdir(outPath, { recursive: true })
                 }

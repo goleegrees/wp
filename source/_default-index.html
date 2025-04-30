@@ -8,10 +8,8 @@
 <body>
     <header class="main-navbar__container">
         <section class="main-navbar">
-            <section class="breadcrumb-nav__container">
-                <section class="breadcrumb-nav">
-                    <a class="root-crumb--alone breadcrumb-item" href="/">Hjelmsby och Hjelmsberg</a>
-                </section>
+            <section class="main-navbar__title">
+                <a class="root-crumb--alone breadcrumb-item" href="/">Hjelmsby och Hjelmsberg</a>
             </section>
             {{main-nav}}
         </section>
@@ -22,7 +20,8 @@
         <section class="main-content__page">
             <h1>{{title}}</h1>
             {{content}}
+            {{content-index}}
         </section>
     </main>
-    <footer>FOTEN!</footer>
+    <footer class="main-footer">Kontakta mig på hemligt@hemligt.se</footer>
 </body>

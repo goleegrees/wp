@@ -1,7 +1,31 @@
+:root {
+    --dominant-color: #ede0d4;
+    --accent-color1: #e6ccb2;
+    --accent-color2: #ddb892;
+    --accent-color3: #b08968;
+    --accent-color4: #9c6644;
+    --standard-color: black;
+    --font1: Georgia, serif;
+    --font2: Verdana, Arial, Helvetica, sans-serif;
+  }
+
 html, body {
     font-size: 16px;
     margin: 0;
     padding: 0;
+    color: var(--standard-color);
+    background-color: var(--dominant-color);
+    font-family: var(--font1);
+    position: relative;
+    min-height: 100vh;
+}
+
+h1 {
+    font-family: var(--font1);
+}
+
+h2,h3,h4,h5,h6 {
+    font-family: var(--font2);
 }
 
 .main-navbar__container {
@@ -10,6 +34,7 @@ html, body {
     top: 0;
     width: 100%;
     height: 4rem;
+    background-color: var(--accent-color1);
 }
 
 .main-navbar {
@@ -21,7 +46,7 @@ html, body {
     height: 100%;
 }
 
-.breadcrumb-nav__container {
+.main-navbar__title {
     display: flex;
     justify-content: left;
     align-items: center;
@@ -62,7 +87,8 @@ html, body {
 }
 
 .main-content {
-    margin-top: 4rem;
+    padding-top: 4rem;
+    padding-bottom: 8rem;
 }
 
 .main-content__page {
@@ -87,4 +113,52 @@ html, body {
 
 .inline-image {
     max-width: 100%;
+}
+
+.index-card {
+    background-color: var(--accent-color2);
+    padding: 1rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    color: var(--standard-color);
+}
+
+.index-card__link-container {
+    text-decoration: none;
+}
+
+.main-footer {
+    height: 8rem;
+    background-color: var(--accent-color1);
+    position: absolute;
+    bottom: 0;
+    width:100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+blockquote {
+    padding: 4rem 1rem;
+    margin: 1rem;
+    position: relative;
+    background-color: var(--accent-color1);
+}
+
+blockquote::before {
+    content: "“";
+    font-size: 6rem;
+    position: absolute;
+    left: 1rem;
+    top: 0;
+    font-family: var(--font2);
+}
+
+blockquote::after {
+    content: "“";
+    font-size: 6rem;
+    position: absolute;
+    right: 1rem;
+    bottom: -3rem;
+    font-family: var(--font2);
 }
