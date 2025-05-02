@@ -1,5 +1,7 @@
 import fs from "fs/promises"
-import { createHash } from "node:crypto"
+import { tmpdir } from "os"
+import { join as pathJoin } from "path"
+import { createHash, randomUUID } from "node:crypto"
 import { createServer } from "http"
 
 let separator = "/"
@@ -39,6 +41,20 @@ if (process.argv.length === 4) {
     
     while (true) {
         console.log("Rebuilding everything.")
+
+        // Save potential .git folder before deleting everything
+        let gotGitFolder = true
+        let tempFolderName = randomUUID()
+        let tempFolderPath = pathJoin(tmpdir(), tempFolderName)
+        try {
+            await fs.cp(pathJoin(rootOutPath, ".git"), tempFolderPath, { recursive: true })
+        } catch (err) {
+            if (err.code === "ENOENT") {
+                gotGitFolder = false
+            } else {
+                throw err
+            }
+        }
     
         try {
             await fs.rm(rootOutPath, { recursive: true })
@@ -48,6 +64,11 @@ if (process.argv.length === 4) {
             }
         }
         await fs.mkdir(rootOutPath)
+
+        // Restore .git folder
+        if (gotGitFolder) {
+            await fs.cp(tempFolderPath, pathJoin(rootOutPath, ".git"), { recursive: true })
+        }
     
         let nav = []
         for (const shortFilePath of await fs.readdir(rootContentPath, rdOpts)) {
@@ -106,8 +127,8 @@ if (process.argv.length === 4) {
                     .replace(/[ö]/,"o")
     
                 // Files that should be copied as they are, possible with cache busting
-                let srcFilePath = ["source", path, filename].filter(x => x.trim()).join(separator) + "." + extension
-                let outPath = [rootOutPath, pathSlug].filter(x => x.trim()).join(separator)
+                let srcFilePath = pathJoin(...["source", path, filename + "." + extension].filter(x => x.trim()))
+                let outPath = pathJoin(...[rootOutPath, pathSlug].filter(x => x.trim()))
                 await fs.mkdir(outPath, { recursive: true })
                 let textData = await fs.readFile(srcFilePath, "utf-8")
                 let finalFilename = filename
@@ -119,7 +140,7 @@ if (process.argv.length === 4) {
                 }
                 finalFilename = filename + "." + key
                 cacheBusting[pathSlug][filename + "." + extension] = finalFilename + "." + extension
-                let outFilePath = [rootOutPath, pathSlug, finalFilename + "." + extension].filter(x => x.trim()).join(separator)
+                let outFilePath = pathJoin(...[rootOutPath, pathSlug, finalFilename + "." + extension].filter(x => x.trim()))
     
                 await fs.writeFile(outFilePath, textData)
             }
@@ -140,8 +161,8 @@ if (process.argv.length === 4) {
                     .replace(/[ö]/,"o")
     
                 // Files that should be copied almost as they are, possible with cache busting
-                let srcFilePath = ["source", path, filename].filter(x => x.trim()).join(separator) + "." + extension
-                let outPath = [rootOutPath, pathSlug].filter(x => x.trim()).join(separator)
+                let srcFilePath = pathJoin(...["source", path, filename + "." + extension].filter(x => x.trim()))
+                let outPath = pathJoin(...[rootOutPath, pathSlug].filter(x => x.trim()))
                 await fs.mkdir(outPath, { recursive: true })
                 let textData = await fs.readFile(srcFilePath, "utf-8")
                 let finalFilename = filename
@@ -156,7 +177,7 @@ if (process.argv.length === 4) {
                 textData = textData
                     .replace(/{{main-nav}}/g, htmlMainNav)
     
-                let outFilePath = [rootOutPath, pathSlug, finalFilename + "." + extension].filter(x => x.trim()).join(separator)
+                let outFilePath = pathJoin(...[rootOutPath, pathSlug, finalFilename + "." + extension].filter(x => x.trim()))
     
                 if (filename.charAt(0) !== "_") {
                     await fs.writeFile(outFilePath, textData)
@@ -184,7 +205,7 @@ if (process.argv.length === 4) {
                     .replace(/[åä]/,"a")
                     .replace(/[ö]/,"o")
     
-                let filePath = [rootContentPath, shortFilePath].map(x => x.trim()).join(separator)
+                let filePath = pathJoin(...[rootContentPath, shortFilePath].map(x => x.trim()))
                 let content = await fs.readFile(filePath, "utf-8")
                 
                 let contentParts = content.split("+++").map(x => x.trim()).filter(x => x)
@@ -275,10 +296,10 @@ if (process.argv.length === 4) {
                     .replace(/{{breadcrumbs}}/g, htmlBreadcrumbs)
                     .replace(/{{content-index}}/g, htmlContentIndex)
     
-                let outPath = [rootOutPath, contentItem.contentTypeSlug, contentItem.nameSlug].map(x => x.trim()).join(separator)
-                let outFilePath = [rootOutPath, contentItem.contentTypeSlug, contentItem.nameSlug, "index.html"].map(x => x.trim()).join(separator)
+                let outPath = pathJoin(...[rootOutPath, contentItem.contentTypeSlug, contentItem.nameSlug].map(x => x.trim()))
+                let outFilePath = pathJoin(...[rootOutPath, contentItem.contentTypeSlug, contentItem.nameSlug, "index.html"].map(x => x.trim()))
                 if (contentItem.name.indexOf("_index") === 0) {
-                    outFilePath = [rootOutPath, contentItem.contentTypeSlug, "index.html"].map(x => x.trim()).join(separator)
+                    outFilePath = pathJoin(...[rootOutPath, contentItem.contentTypeSlug, "index.html"].map(x => x.trim()))
                 } else {
                     await fs.mkdir(outPath, { recursive: true })
                 }
