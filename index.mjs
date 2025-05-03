@@ -288,9 +288,21 @@ if (process.argv.length === 4) {
                     }
                 }
 
+                let featuredImageHtml = `<img class="banner-image" src="${contentItem.settings.featured_image}" alt="${contentItem.settings.featured_image_alt}">`
+                if (contentItem.settings.featured_image_narrow) {
+                    featuredImageHtml = ""
+                    featuredImageHtml += '<section class="banner-image__container">'
+                    featuredImageHtml += '  <picture>'
+                    featuredImageHtml += `    <source media="(max-width: 799px)" srcset="${contentItem.settings.featured_image_narrow}" />`
+                    featuredImageHtml += `    <source media="(min-width: 800px)" srcset="${contentItem.settings.featured_image}" />`
+                    featuredImageHtml += `    <img class="banner-image" src="${contentItem.settings.featured_image}" alt="${contentItem.settings.featured_image_alt}">`
+                    featuredImageHtml += '  </picture>'
+                    featuredImageHtml += '</section>'
+                }
+
                 let html = contentTemplate
                     .replace(/{{title}}/g, contentItem.settings.title)
-                    .replace(/{{featured_image}}/g, contentItem.settings.featured_image)
+                    .replace(/{{featured_image}}/g, featuredImageHtml)
                     .replace(/{{content}}/g, htmlContent)
                     .replace(/{{main-nav}}/g, htmlMainNav)
                     .replace(/{{breadcrumbs}}/g, htmlBreadcrumbs)
