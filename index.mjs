@@ -5,8 +5,10 @@ import { createHash, randomUUID } from "node:crypto"
 import { createServer } from "http"
 
 let separator = "/"
+let rxSeparator = "/"
 if (process.platform === "win32") {
     separator = "\\"
+    rxSeparator = "\\\\"
 }
 
 const rdOpts = {
@@ -114,7 +116,7 @@ if (process.argv.length === 4) {
     
         let cacheBusting = {}
         for (const filePath of await fs.readdir("source", rdOpts)) {
-            let sourceMatch = filePath.match(/^(?:(.*)\/)?([^/]+)\.(css|js)$/)
+            let sourceMatch = filePath.match(new RegExp("^(?:(.*)" + rxSeparator + ")?([^" + rxSeparator + "]+)\.(css|js)$"))
             if (sourceMatch) {
                 let path = sourceMatch[1] || ""
                 let filename = sourceMatch[2]
@@ -148,7 +150,7 @@ if (process.argv.length === 4) {
     
         let templates = {}
         for (const filePath of await fs.readdir("source", rdOpts)) {
-            let sourceMatch = filePath.match(/^(?:(.*)\/)?([^/]+)\.(html)$/)
+            let sourceMatch = filePath.match(new RegExp("^(?:(.*)" + rxSeparator + ")?([^" + rxSeparator + "]+)\.(html)$"))
             if (sourceMatch) {
                 let path = sourceMatch[1] || ""
                 let filename = sourceMatch[2]
@@ -190,7 +192,7 @@ if (process.argv.length === 4) {
         let allContent = {}
         let contentPerType = {}
         for (const shortFilePath of await fs.readdir(rootContentPath, rdOpts)) {
-            let contentMatch = shortFilePath.match(/^(.*)\/([^/]+)\.md$/)
+            let contentMatch = shortFilePath.match(new RegExp("^(.*)" + rxSeparator + "([^" + rxSeparator + "]+)\.md$"))
             if (contentMatch) {
                 let contentType = contentMatch[1]
                 let contentTypeSlug = contentType
