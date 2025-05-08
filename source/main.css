@@ -69,7 +69,7 @@ h2,h3,h4,h5,h6 {
 }
 
 .main-nav {
-    background-color: white;
+    background-color: var(--dominant-color);
     padding: 0.5rem;
     border: solid 1px black;
     cursor:default;
