@@ -255,6 +255,9 @@ try {
                         .map(x => x.trim())
                     let htmlContent = contentRows
                         .map(row => row
+                            .replace(/!\[(.+?)\]\((.+?)(?: "?(.+?)"?)?\)/, '<img class="inline-image" src="$2" alt="$1" title="$3">')
+                            .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2">$1</a>')
+                            .replace(/^ATTR:(.*)$/, '<section class="image-attribution">$1</section>')
                             .replace(/##### (.*)$/, "<h5>$1</h5>")
                             .replace(/#### (.*)$/, "<h4>$1</h4>")
                             .replace(/### (.*)$/, "<h3>$1</h3>")
@@ -263,8 +266,6 @@ try {
                             .replace(/\*\*\*(.*?)\*\*\*/, "<strong><em>$1</em></strong>")
                             .replace(/\*\*(.*?)\*\*/, "<strong>$1</strong>")
                             .replace(/\*(.*?)\*/, "<em>$1</em>")
-                            .replace(/!\[(.+?)\]\((.+?)(?: "?(.+?)"?)?\)/, '<img class="inline-image" src="$2" alt="$1" title="$3">')
-                            .replace(/\[(.+?)\]\((.+?)\)/, '<a href="$2">$1</a>')
                             .replace(/^>(.*)/, "<blockquote><p>$1</p></blockquote>")
                             .replace(/^([^<].*)$/, "<p>$1</p>"))
                         .join("\n")
