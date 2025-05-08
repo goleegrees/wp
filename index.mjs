@@ -297,7 +297,12 @@ try {
                         }
                     }
     
-                    let featuredImageHtml = `<img class="banner-image" src="${contentItem.settings.featured_image}" alt="${contentItem.settings.featured_image_alt}">`
+                    let featuredImageHtml = '<section class="banner-image__container">'
+                    featuredImageHtml += `<img class="banner-image" src="${contentItem.settings.featured_image}" alt="${contentItem.settings.featured_image_alt}">`
+                    if (contentItem.settings.featured_image_attribution) {
+                        featuredImageHtml += `  <section class="image-attribution">${contentItem.settings.featured_image_attribution.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>')}</section>`
+                    }
+                    featuredImageHtml += '</section>'
                     if (contentItem.settings.featured_image_narrow) {
                         featuredImageHtml = ""
                         featuredImageHtml += '<section class="banner-image__container">'
@@ -306,6 +311,9 @@ try {
                         featuredImageHtml += `    <source media="(min-width: 800px)" srcset="${contentItem.settings.featured_image}" />`
                         featuredImageHtml += `    <img class="banner-image" src="${contentItem.settings.featured_image}" alt="${contentItem.settings.featured_image_alt}">`
                         featuredImageHtml += '  </picture>'
+                        if (contentItem.settings.featured_image_attribution) {
+                            featuredImageHtml += `  <section class="image-attribution">${contentItem.settings.featured_image_attribution}</section>`
+                        }
                         featuredImageHtml += '</section>'
                     }
     

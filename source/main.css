@@ -171,3 +171,9 @@ blockquote::after {
     bottom: -3rem;
     font-family: var(--font2);
 }
+
+.image-attribution {
+    padding: 0.2rem 1rem;
+    background-color: var(--accent-color4);
+    font-size: 0.8rem;
+}
