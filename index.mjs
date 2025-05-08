@@ -214,8 +214,12 @@ if (process.argv.length === 4) {
                 let settings = contentParts[0]
                     .split(/[\r\n|\n|\r]/)
                     .filter(x => x.trim())
-                    .map(row => row.match(/^(.*?)=(.*)$/))
-                    .reduce((acc, match) => {
+                    .map(row => Object.assign({ row, match:row.match(/^(.*?)=(.*)$/) }))
+                    .reduce((acc, rowAndmatch) => {
+                        let match = rowAndmatch.match
+                        if (!match) {
+                            throw new Error(rowAndmatch.row + " i " + name + " ser lite fel ut.")
+                        }
                         acc[match[1].trim()] = match[2].trim()
                             .replace(/^['"]/g, "")
                             .replace(/['"]$/g, "")
