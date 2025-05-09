@@ -263,6 +263,8 @@ try {
                             .replace(/### (.*)$/, "<h3>$1</h3>")
                             .replace(/## (.*)$/, "<h2>$1</h2>")
                             .replace(/# (.*)$/, "<h1>$1</h1>")
+                            .replace(/^\* (.*)$/, '<li>UL$1</li>')
+                            .replace(/^[0-9]+\. (.*)$/, '<li>OL$1</li>')
                             .replace(/\*\*\*(.*?)\*\*\*/, "<strong><em>$1</em></strong>")
                             .replace(/\*\*(.*?)\*\*/, "<strong>$1</strong>")
                             .replace(/\*(.*?)\*/, "<em>$1</em>")
@@ -270,6 +272,9 @@ try {
                             .replace(/^([^<].*)$/, "<p>$1</p>"))
                         .join("\n")
                             .replace(/<\/blockquote>\n<blockquote>/gs, "")
+                            .replace(/((?:<li>UL.*?<\/li>(?:\n|$))+)/, "<ul>$1</ul>")
+                            .replace(/((?:<li>OL.*?<\/li>(?:\n|$))+)/, "<ol>$1</ol>")
+                            .replace(/<li>(?:OL|UL)/g, "<li>")
         
                     let contentTemplate = templates["_default-content.html"]
                     if (contentItem.name.indexOf("_index") === 0) {
