@@ -178,3 +178,11 @@ blockquote::after {
     background-color: var(--accent-color4);
     font-size: 0.8rem;
 }
+
+.footnote-infobox {
+    position: absolute;
+    padding: 0.5rem;
+    background-color: var(--accent-color1);
+    max-width: 50vw;
+    transition: opacity 0.5s;
+}

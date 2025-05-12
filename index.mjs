@@ -255,6 +255,8 @@ try {
                         .map(x => x.trim())
                     let htmlContent = contentRows
                         .map(row => row
+                            .replace(/\[\^([0-9]+)\]:(.*)/g, '<li id="footnote$1">OL$2</li>')
+                            .replace(/\[\^([0-9]+)\]/g, '<a class="footnote-link" href="#footnote$1"><sup>$1</sup></a>')
                             .replace(/!\[(.+?)\]\((.+?)(?: "?(.+?)"?)?\)/, '<img class="inline-image" src="$2" alt="$1" title="$3">')
                             .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2">$1</a>')
                             .replace(/^ATTR:(.*)$/, '<section class="image-attribution">$1</section>')
@@ -273,9 +275,9 @@ try {
                             .replace(/---/g, "<hr>"))
                         .join("\n")
                             .replace(/<\/blockquote>\n<blockquote>/gs, "")
-                            .replace(/((?:<li>UL.*?<\/li>(?:\n|$))+)/, "<ul>$1</ul>")
-                            .replace(/((?:<li>OL.*?<\/li>(?:\n|$))+)/, "<ol>$1</ol>")
-                            .replace(/<li>(?:OL|UL)/g, "<li>")
+                            .replace(/((?:<li.*?>UL.*?<\/li>(?:\n|$))+)/, "<ul>$1</ul>")
+                            .replace(/((?:<li.*?>OL.*?<\/li>(?:\n|$))+)/, "<ol>$1</ol>")
+                            .replace(/(<li.*?>)(?:OL|UL)/g, "$1")
         
                     let contentTemplate = templates["_default-content.html"]
                     if (contentItem.name.indexOf("_index") === 0) {

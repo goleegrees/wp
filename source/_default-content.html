@@ -23,4 +23,37 @@
         </section>
     </main>
     <footer class="main-footer"></footer>
+    <script>
+        document.querySelectorAll(".footnote-link").forEach(el => {
+            let infoBoxEl
+            el.addEventListener("mouseover", event => {
+                let aEl = event.target
+                if (aEl.tagName !== "A") {
+                    aEl = event.target.parentElement
+                }
+                let noteEl = document.querySelector(aEl.getAttribute("href"))
+                if (noteEl) {
+                    let rect = aEl.getBoundingClientRect()
+                    infoBoxEl = document.createElement("section")
+                    infoBoxEl.classList.add("footnote-infobox")
+                    infoBoxEl.innerText = noteEl.innerText
+                    infoBoxEl.style.opacity = 0
+                    document.querySelector("body").appendChild(infoBoxEl)
+                    let infoBoxRect = infoBoxEl.getBoundingClientRect()
+                    infoBoxEl.style.left = (rect.left + window.scrollX - infoBoxRect.width/2) + "px"
+                    infoBoxEl.style.top = (rect.top + window.scrollY - infoBoxRect.height) + "px"
+                    infoBoxEl.style.opacity = 1
+                }
+            })
+            el.addEventListener("mouseout", event => {
+                let aEl = event.target
+                if (aEl.tagName !== "A") {
+                    aEl = event.target.parentElement
+                }
+                if (infoBoxEl) {
+                    infoBoxEl.remove()
+                }
+            })
+        })
+    </script>
 </body>
