@@ -36,7 +36,7 @@
                     let rect = aEl.getBoundingClientRect()
                     infoBoxEl = document.createElement("section")
                     infoBoxEl.classList.add("footnote-infobox")
-                    infoBoxEl.innerText = noteEl.innerText
+                    infoBoxEl.innerHTML = noteEl.innerHTML
                     infoBoxEl.style.opacity = 0
                     document.querySelector("body").appendChild(infoBoxEl)
                     let infoBoxRect = infoBoxEl.getBoundingClientRect()
