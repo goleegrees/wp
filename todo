@@ -4,5 +4,8 @@
 [X] Content index pages
 [X] Better responsive images
 [X] Bakgrund menyn
-[ ] Ta bort menyn när man klickar bredvid
+[X] BUGG: Ingen ny paragraf efter bild
 [ ] Footnotes
+[ ] Två blanksteg i slutet skapar ny rad.
+[ ] Kunna välja att bygga prodversion som inte tar med drafts.
+[ ] Ta bort menyn när man klickar bredvid
