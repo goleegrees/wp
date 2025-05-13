@@ -77,7 +77,7 @@ try {
         
             let nav = []
             for (const shortFilePath of await fs.readdir(rootContentPath, rdOpts)) {
-                if (shortFilePath.includes(separator) && shortFilePath.indexOf("_index") === -1) {
+                if (!shortFilePath.includes("Ordbok") && shortFilePath.includes(separator) && shortFilePath.indexOf("_index") === -1) {
                     let parts = shortFilePath.split(separator)
                     let subjectName = parts[0]
                     let itemName = parts[1]?.replace(".md", "")
@@ -255,10 +255,10 @@ try {
                         .map(x => x.trim())
                     let htmlContent = contentRows
                         .map(row => row
-                            .replace(/\[\^([0-9]+)\]:(.*)/g, '<li id="footnote$1">OL$2</li>')
-                            .replace(/\[\^([0-9]+)\]/g, '<a class="footnote-link" href="#footnote$1"><sup>[$1]</sup></a>')
-                            .replace(/!\[(.+?)\]\((.+?)(?: "?(.+?)"?)?\)/, '<img class="inline-image" src="$2" alt="$1" title="$3">')
-                            .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2">$1</a>')
+                            .replace(/\[\^([0-9]+?)\]:(.*)/g, '<li id="footnote$1">OL$2</li>')
+                            .replace(/\[\^([0-9]+?)\]/g, '<a class="footnote-link" href="#footnote$1"><sup>[$1]</sup></a>')
+                            .replace(/!\[([^\]]+?)\]\((.+?)(?: "?(.+?)"?)?\)/, '<img class="inline-image" src="$2" alt="$1" title="$3">')
+                            .replace(/\[([^\]]+?)\]\((.+?)\)/g, '<a href="$2">$1</a>')
                             .replace(/^ATTR:(.*)$/, '<section class="image-attribution">$1</section>')
                             .replace(/##### (.*)$/, "<h5>$1</h5>")
                             .replace(/#### (.*)$/, "<h4>$1</h4>")
@@ -282,6 +282,8 @@ try {
                     let contentTemplate = templates["_default-content.html"]
                     if (contentItem.name.indexOf("_index") === 0) {
                         contentTemplate = templates["_default-index.html"]
+                    } else if (contentItem.contentTypeSlug === "ordbok") {
+                        contentTemplate = templates["_default-dictionary-content.html"]
                     }
     
                     let htmlBreadcrumbs = `<section class="breadcrumbs"><a href="/">Hjelmsby och Hjelmsberg</a> | ${contentItem.contentType}</section>`
@@ -342,6 +344,11 @@ try {
                         await fs.mkdir(outPath, { recursive: true })
                     }
                     await fs.writeFile(outFilePath, html)
+
+                    if (contentItem.contentTypeSlug === "ordbok") {
+                        let minOutFilePath = pathJoin(...[rootOutPath, contentItem.contentTypeSlug, contentItem.nameSlug, "min.html"].map(x => x.trim()))
+                        await fs.writeFile(minOutFilePath, htmlContent)
+                    }
                 }
             }
         

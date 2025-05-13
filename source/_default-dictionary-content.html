@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<head>
+    <title>{{title}}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/main.css" rel="stylesheet" />
+</head>
+<body>
+    <header class="main-navbar__container">
+        <section class="main-navbar">
+            <section class="main-navbar__title">
+                <a class="root-crumb--alone breadcrumb-item" href="/">Hjelmsby och Hjelmsberg</a>
+            </section>
+            {{main-nav}}
+        </section>
+    </header>
+    <main class="main-content">
+        <section class="main-content__page">
+            <h1>{{title}}</h1>
+            {{content}}
+        </section>
+    </main>
+    <footer class="main-footer"></footer>
+</body>

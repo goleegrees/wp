@@ -40,8 +40,56 @@
                     infoBoxEl.style.opacity = 0
                     document.querySelector("body").appendChild(infoBoxEl)
                     let infoBoxRect = infoBoxEl.getBoundingClientRect()
-                    infoBoxEl.style.left = (rect.left + window.scrollX - infoBoxRect.width/2) + "px"
-                    infoBoxEl.style.top = (rect.top + window.scrollY - infoBoxRect.height) + "px"
+                    let left = (rect.left + window.scrollX - infoBoxRect.width/2)
+                    let top = (rect.top + window.scrollY - infoBoxRect.height)
+                    if (left < 0) {
+                        left = 0
+                    }
+                    if (top < 0) {
+                        top = 0
+                    }
+                    infoBoxEl.style.left = left + "px"
+                    infoBoxEl.style.top = top + "px"
+                    infoBoxEl.style.opacity = 1
+                }
+            })
+            el.addEventListener("mouseout", event => {
+                let aEl = event.target
+                if (aEl.tagName !== "A") {
+                    aEl = event.target.parentElement
+                }
+                if (infoBoxEl) {
+                    infoBoxEl.remove()
+                }
+            })
+        })
+        document.querySelectorAll('a[href*="ordbok"]').forEach(el => {
+            let infoBoxEl
+            el.addEventListener("mouseover", async event => {
+                let aEl = event.target
+                if (aEl.tagName !== "A") {
+                    aEl = event.target.parentElement
+                }
+                let response = await fetch(el.href + "/min.html")
+                let htmlText = await response.text()
+                if (htmlText) {
+                    let rect = aEl.getBoundingClientRect()
+                    infoBoxEl = document.createElement("section")
+                    infoBoxEl.classList.add("footnote-infobox")
+                    infoBoxEl.innerHTML = htmlText
+                    infoBoxEl.style.opacity = 0
+                    document.querySelector("body").appendChild(infoBoxEl)
+                    let infoBoxRect = infoBoxEl.getBoundingClientRect()
+                    let left = (rect.left + window.scrollX - infoBoxRect.width/2)
+                    let top = (rect.top + window.scrollY - infoBoxRect.height)
+                    if (left < 0) {
+                        left = 0
+                    }
+                    if (top < 0) {
+                        top = 0
+                    }
+                    infoBoxEl.style.left = left + "px"
+                    infoBoxEl.style.top = top + "px"
                     infoBoxEl.style.opacity = 1
                 }
             })
