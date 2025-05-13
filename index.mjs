@@ -256,7 +256,7 @@ try {
                     let htmlContent = contentRows
                         .map(row => row
                             .replace(/\[\^([0-9]+)\]:(.*)/g, '<li id="footnote$1">OL$2</li>')
-                            .replace(/\[\^([0-9]+)\]/g, '<a class="footnote-link" href="#footnote$1"><sup>$1</sup></a>')
+                            .replace(/\[\^([0-9]+)\]/g, '<a class="footnote-link" href="#footnote$1"><sup>[$1]</sup></a>')
                             .replace(/!\[(.+?)\]\((.+?)(?: "?(.+?)"?)?\)/, '<img class="inline-image" src="$2" alt="$1" title="$3">')
                             .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2">$1</a>')
                             .replace(/^ATTR:(.*)$/, '<section class="image-attribution">$1</section>')

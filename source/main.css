@@ -186,3 +186,16 @@ blockquote::after {
     max-width: 50vw;
     transition: opacity 0.5s;
 }
+
+.footnote-link {
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.footnote-link:visited {
+    color: rgb(0,0,238);
+}
+
+.footnote-link:hover {
+    text-decoration: underline;
+}
