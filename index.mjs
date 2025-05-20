@@ -17,10 +17,17 @@ try {
     const rdOpts = {
         recursive: true
     }
+
+    let argv = process.argv.slice()
+    let doPublish = false
+    if (argv.length === 5 && argv.includes("-p")) {
+        argv = argv.filter(x => x !== "-p")
+        doPublish = true
+    }
     
-    if (process.argv.length === 4) {
-        let rootContentPath = process.argv[2]
-        let rootOutPath = process.argv[3]
+    if (argv.length === 4) {
+        let rootContentPath = argv[2]
+        let rootOutPath = argv[3]
     
         server = createServer(async (req, res) => {
             try {
@@ -74,6 +81,64 @@ try {
             if (gotGitFolder) {
                 await fs.cp(tempFolderPath, pathJoin(rootOutPath, ".git"), { recursive: true })
             }
+
+            let allContent = {}
+            let contentPerType = {}
+            for (const shortFilePath of await fs.readdir(rootContentPath, rdOpts)) {
+                let contentMatch = shortFilePath.match(new RegExp("^(.*)" + rxSeparator + "([^" + rxSeparator + "]+)\.md$"))
+                if (contentMatch) {
+                    let contentType = contentMatch[1]
+                    let contentTypeSlug = contentType
+                        .replace(/ /g, "-")
+                        .toLowerCase()
+                        .replace(/[åä]/,"a")
+                        .replace(/[ö]/,"o")
+                    let name = contentMatch[2]
+                    let nameSlug = name
+                        .replace(/ /g, "-")
+                        .toLowerCase()
+                        .replace(/[åä]/,"a")
+                        .replace(/[ö]/,"o")
+        
+                    let filePath = pathJoin(...[rootContentPath, shortFilePath].map(x => x.trim()))
+                    let content = await fs.readFile(filePath, "utf-8")
+                    
+                    let contentParts = content.split("+++").map(x => x.trim()).filter(x => x)
+                    let settings = contentParts[0]
+                        .split(/[\r\n|\n|\r]/)
+                        .filter(x => x.trim())
+                        .map(row => Object.assign({ row, match:row.match(/^(.*?)=(.*)$/) }))
+                        .reduce((acc, rowAndmatch) => {
+                            let match = rowAndmatch.match
+                            if (!match) {
+                                throw new Error(rowAndmatch.row + " i " + name + " ser lite fel ut.")
+                            }
+                            let strValue = match[2].trim()
+                                .replace(/^['"]/g, "")
+                                .replace(/['"]$/g, "")
+                            acc[match[1].trim()] = strValue.match(/(?:true|false)/i) ?
+                                !!strValue.match(/true/i) :
+                                strValue
+                            return acc
+                        },{})
+    
+                    let contentItem = {
+                        contentType,
+                        contentTypeSlug,
+                        name,
+                        nameSlug,
+                        settings,
+                        data: contentParts[1]
+                    }
+                    
+                    allContent[shortFilePath] = contentItem
+    
+                    if (!contentPerType[contentTypeSlug]) {
+                        contentPerType[contentTypeSlug] = []
+                    }
+                    contentPerType[contentTypeSlug].push(contentItem)
+                }
+            }
         
             let nav = []
             for (const shortFilePath of await fs.readdir(rootContentPath, rdOpts)) {
@@ -82,15 +147,18 @@ try {
                     let subjectName = parts[0]
                     let itemName = parts[1]?.replace(".md", "")
             
-                    let navItem = nav.find(x => x.subject === subjectName)
-                    if (!navItem) {
-                        navItem = {
-                            subject: subjectName,
-                            items: []
+                    let contentItem = allContent[shortFilePath]
+                    if (!contentItem.settings.draft || (!doPublish && contentItem.settings.draft)) {
+                        let navItem = nav.find(x => x.subject === subjectName)
+                        if (!navItem) {
+                            navItem = {
+                                subject: subjectName,
+                                items: []
+                            }
+                            nav.push(navItem)
                         }
-                        nav.push(navItem)
+                        navItem.items.push(itemName)
                     }
-                    navItem.items.push(itemName)
                 }
             }
             nav.forEach(navItem => navItem.items.sort())
@@ -191,60 +259,6 @@ try {
                     }
                 }
             }
-    
-            let allContent = {}
-            let contentPerType = {}
-            for (const shortFilePath of await fs.readdir(rootContentPath, rdOpts)) {
-                let contentMatch = shortFilePath.match(new RegExp("^(.*)" + rxSeparator + "([^" + rxSeparator + "]+)\.md$"))
-                if (contentMatch) {
-                    let contentType = contentMatch[1]
-                    let contentTypeSlug = contentType
-                        .replace(/ /g, "-")
-                        .toLowerCase()
-                        .replace(/[åä]/,"a")
-                        .replace(/[ö]/,"o")
-                    let name = contentMatch[2]
-                    let nameSlug = name
-                        .replace(/ /g, "-")
-                        .toLowerCase()
-                        .replace(/[åä]/,"a")
-                        .replace(/[ö]/,"o")
-        
-                    let filePath = pathJoin(...[rootContentPath, shortFilePath].map(x => x.trim()))
-                    let content = await fs.readFile(filePath, "utf-8")
-                    
-                    let contentParts = content.split("+++").map(x => x.trim()).filter(x => x)
-                    let settings = contentParts[0]
-                        .split(/[\r\n|\n|\r]/)
-                        .filter(x => x.trim())
-                        .map(row => Object.assign({ row, match:row.match(/^(.*?)=(.*)$/) }))
-                        .reduce((acc, rowAndmatch) => {
-                            let match = rowAndmatch.match
-                            if (!match) {
-                                throw new Error(rowAndmatch.row + " i " + name + " ser lite fel ut.")
-                            }
-                            acc[match[1].trim()] = match[2].trim()
-                                .replace(/^['"]/g, "")
-                                .replace(/['"]$/g, "")
-                            return acc
-                        },{})
-    
-                    let contentItem = {
-                        contentType,
-                        contentTypeSlug,
-                        name,
-                        nameSlug,
-                        settings,
-                        data: contentParts[1]
-                    }
-                    allContent[shortFilePath] = contentItem
-    
-                    if (!contentPerType[contentTypeSlug]) {
-                        contentPerType[contentTypeSlug] = []
-                    }
-                    contentPerType[contentTypeSlug].push(contentItem)
-                }
-            }
         
             for (const shortFilePath of await fs.readdir(rootContentPath, rdOpts)) {
                 let contentItem = allContent[shortFilePath]
@@ -297,12 +311,14 @@ try {
                         if (collection) {
                             htmlContentIndex += "<section>"
                             for (const indexItem of collection.filter(x => x.name !== "_index")) {
-                                htmlContent += `  <a class="index-card__link-container" href="/${indexItem.contentTypeSlug}/${indexItem.nameSlug}">`
-                                htmlContent += '    <section class="index-card">'
-                                htmlContent += `      <img class="inline-image" src="${indexItem.settings.featured_image}">`
-                                htmlContent += `      <h3>${indexItem.settings.title}</h3>`
-                                htmlContent += "    </section>"
-                                htmlContent += "  </a>"
+                                if (!indexItem.settings.draft || (!doPublish && indexItem.settings.draft)) {
+                                    htmlContent += `  <a class="index-card__link-container" href="/${indexItem.contentTypeSlug}/${indexItem.nameSlug}">`
+                                    htmlContent += '    <section class="index-card">'
+                                    htmlContent += `      <img class="inline-image" src="${indexItem.settings.featured_image}">`
+                                    htmlContent += `      <h3>${indexItem.settings.title}</h3>`
+                                    htmlContent += "    </section>"
+                                    htmlContent += "  </a>"
+                                }
                             }
                             htmlContentIndex += "</section>"
                         }
@@ -335,15 +351,17 @@ try {
                         .replace(/{{main-nav}}/g, htmlMainNav)
                         .replace(/{{breadcrumbs}}/g, htmlBreadcrumbs)
                         .replace(/{{content-index}}/g, htmlContentIndex)
-        
-                    let outPath = pathJoin(...[rootOutPath, contentItem.contentTypeSlug, contentItem.nameSlug].map(x => x.trim()))
-                    let outFilePath = pathJoin(...[rootOutPath, contentItem.contentTypeSlug, contentItem.nameSlug, "index.html"].map(x => x.trim()))
-                    if (contentItem.name.indexOf("_index") === 0) {
-                        outFilePath = pathJoin(...[rootOutPath, contentItem.contentTypeSlug, "index.html"].map(x => x.trim()))
-                    } else {
-                        await fs.mkdir(outPath, { recursive: true })
+
+                    if (!contentItem.settings.draft || (!doPublish && contentItem.settings.draft)) {
+                        let outPath = pathJoin(...[rootOutPath, contentItem.contentTypeSlug, contentItem.nameSlug].map(x => x.trim()))
+                        let outFilePath = pathJoin(...[rootOutPath, contentItem.contentTypeSlug, contentItem.nameSlug, "index.html"].map(x => x.trim()))
+                        if (contentItem.name.indexOf("_index") === 0) {
+                            outFilePath = pathJoin(...[rootOutPath, contentItem.contentTypeSlug, "index.html"].map(x => x.trim()))
+                        } else {
+                            await fs.mkdir(outPath, { recursive: true })
+                        }
+                        await fs.writeFile(outFilePath, html)
                     }
-                    await fs.writeFile(outFilePath, html)
 
                     if (contentItem.contentTypeSlug === "ordbok") {
                         let minOutFilePath = pathJoin(...[rootOutPath, contentItem.contentTypeSlug, contentItem.nameSlug, "min.html"].map(x => x.trim()))
