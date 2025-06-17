@@ -86,6 +86,10 @@ try {
             let contentPerType = {}
             for (const shortFilePath of await fs.readdir(rootContentPath, rdOpts)) {
                 let contentMatch = shortFilePath.match(new RegExp("^(.*)" + rxSeparator + "([^" + rxSeparator + "]+)\.md$"))
+                if (!contentMatch) {
+                    // Special handling of root folder
+                    contentMatch = shortFilePath.match("()(_index.md)")
+                }
                 if (contentMatch) {
                     let contentType = contentMatch[1]
                     let contentTypeSlug = contentType
@@ -294,7 +298,10 @@ try {
                             .replace(/(<li.*?>)(?:OL|UL)/g, "$1")
         
                     let contentTemplate = templates["_default-content.html"]
-                    if (contentItem.name.indexOf("_index") === 0) {
+
+                    if (contentItem.name === "_index.md" && contentItem.contentTypeSlug === "") {
+                        contentTemplate = templates["_main-index.html"]
+                    } else if (contentItem.name.indexOf("_index") === 0) {
                         contentTemplate = templates["_default-index.html"]
                     } else if (contentItem.contentTypeSlug === "ordbok") {
                         contentTemplate = templates["_default-dictionary-content.html"]
@@ -312,12 +319,12 @@ try {
                             htmlContentIndex += "<section>"
                             for (const indexItem of collection.filter(x => x.name !== "_index")) {
                                 if (!indexItem.settings.draft || (!doPublish && indexItem.settings.draft)) {
-                                    htmlContent += `  <a class="index-card__link-container" href="/${indexItem.contentTypeSlug}/${indexItem.nameSlug}">`
-                                    htmlContent += '    <section class="index-card">'
-                                    htmlContent += `      <img class="inline-image" src="${indexItem.settings.featured_image}">`
-                                    htmlContent += `      <h3>${indexItem.settings.title}</h3>`
-                                    htmlContent += "    </section>"
-                                    htmlContent += "  </a>"
+                                    htmlContentIndex += `  <a class="index-card__link-container" href="/${indexItem.contentTypeSlug}/${indexItem.nameSlug}">`
+                                    htmlContentIndex += '    <section class="index-card">'
+                                    htmlContentIndex += `      <img class="inline-image" src="${indexItem.settings.featured_image}">`
+                                    htmlContentIndex += `      <h3>${indexItem.settings.title}</h3>`
+                                    htmlContentIndex += "    </section>"
+                                    htmlContentIndex += "  </a>"
                                 }
                             }
                             htmlContentIndex += "</section>"
