@@ -21,4 +21,110 @@
         </section>
     </main>
     <footer class="main-footer"></footer>
+    <script>
+        document.addEventListener("click", event => {
+            // Close all infoboxes
+            document.querySelectorAll(".footnote-infobox").forEach(el => el.remove())
+
+            // Close main menu
+            document.querySelector(".main-nav").childNodes[0].open = false 
+        })
+
+        document.querySelectorAll(".footnote-link").forEach(el => {
+            let infoBoxEl
+            el.addEventListener("mouseover", event => {
+                let aEl = event.target
+                if (aEl.tagName !== "A") {
+                    aEl = event.target.parentElement
+                }
+                let noteEl = document.querySelector(aEl.getAttribute("href"))
+                if (noteEl) {
+                    let rect = aEl.getBoundingClientRect()
+                    infoBoxEl = document.createElement("section")
+                    infoBoxEl.classList.add("footnote-infobox")
+                    infoBoxEl.innerHTML = noteEl.innerHTML
+                    infoBoxEl.style.opacity = 0
+                    document.querySelector("body").appendChild(infoBoxEl)
+                    let infoBoxRect = infoBoxEl.getBoundingClientRect()
+                    let left = (rect.left + window.scrollX - infoBoxRect.width/2)
+                    let top = (rect.top + window.scrollY - infoBoxRect.height)
+                    if (left < 0) {
+                        left = 0
+                    }
+                    if (top < 0) {
+                        top = 0
+                    }
+                    infoBoxEl.style.left = left + "px"
+                    infoBoxEl.style.top = top + "px"
+                    infoBoxEl.style.opacity = 1
+                }
+            })
+            el.addEventListener("mouseout", event => {
+                let aEl = event.target
+                if (aEl.tagName !== "A") {
+                    aEl = event.target.parentElement
+                }
+                if (infoBoxEl) {
+                    infoBoxEl.remove()
+                }
+            })
+        })
+        document.querySelectorAll('a[href*="ordbok"]').forEach(el => {
+            let infoBoxEl
+            let openTimer
+
+            let openInfoBox = async event => {
+                let res
+                if (!openTimer) {
+                    let aEl = event.target
+                    if (aEl.tagName !== "A") {
+                        aEl = event.target.parentElement
+                    }
+                    let response = await fetch(el.href + "/min.html")
+                    let htmlText = await response.text()
+                    if (htmlText) {
+                        let rect = aEl.getBoundingClientRect()
+                        infoBoxEl = document.createElement("section")
+                        infoBoxEl.classList.add("footnote-infobox")
+                        infoBoxEl.innerHTML = htmlText
+                        infoBoxEl.style.opacity = 0
+                        document.querySelector("body").appendChild(infoBoxEl)
+                        let infoBoxRect = infoBoxEl.getBoundingClientRect()
+                        let left = (rect.left + window.scrollX - infoBoxRect.width/2)
+                        let top = (rect.top + window.scrollY - infoBoxRect.height)
+                        if (left < 0) {
+                            left = 0
+                        }
+                        if (top < 0) {
+                            top = 0
+                        }
+                        infoBoxEl.style.left = left + "px"
+                        infoBoxEl.style.top = top + "px"
+                        infoBoxEl.style.opacity = 1
+                    }
+                    res = { aEl, infoBoxEl }
+                }
+                return res
+            }
+
+            el.addEventListener("click", async event => {
+                if (!document.querySelector(".footnote-infobox")) {
+                    // No infobox exists, show it
+                    event.preventDefault()
+                    await openInfoBox(event)
+                }
+            })
+            el.addEventListener("mouseover", async event => {
+                let { aEl, infoBoxEl } = await openInfoBox(event)
+
+                openTimer = setInterval(_ => {
+                    if (openTimer && !aEl.matches(":hover") && !infoBoxEl.matches(":hover")) {
+                        infoBoxEl.remove()
+                        clearInterval(openTimer)
+                        openTimer = undefined
+                    }
+                }, 100)
+            })
+        })
+    </script>
 </body>

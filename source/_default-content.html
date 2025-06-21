@@ -25,7 +25,11 @@
     <footer class="main-footer"></footer>
     <script>
         document.addEventListener("click", event => {
+            // Close all infoboxes
             document.querySelectorAll(".footnote-infobox").forEach(el => el.remove())
+
+            // Close main menu
+            document.querySelector(".main-nav").childNodes[0].open = false 
         })
 
         document.querySelectorAll(".footnote-link").forEach(el => {
