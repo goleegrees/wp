@@ -24,6 +24,10 @@
     </main>
     <footer class="main-footer"></footer>
     <script>
+        document.addEventListener("click", event => {
+            document.querySelectorAll(".footnote-infobox").forEach(el => el.remove())
+        })
+
         document.querySelectorAll(".footnote-link").forEach(el => {
             let infoBoxEl
             el.addEventListener("mouseover", event => {
@@ -66,7 +70,9 @@
         document.querySelectorAll('a[href*="ordbok"]').forEach(el => {
             let infoBoxEl
             let openTimer
-            el.addEventListener("mouseover", async event => {
+
+            let openInfoBox = async event => {
+                let res
                 if (!openTimer) {
                     let aEl = event.target
                     if (aEl.tagName !== "A") {
@@ -94,15 +100,28 @@
                         infoBoxEl.style.top = top + "px"
                         infoBoxEl.style.opacity = 1
                     }
-
-                    openTimer = setInterval(_ => {
-                        if (openTimer && !aEl.matches(":hover") && !infoBoxEl.matches(":hover")) {
-                            infoBoxEl.remove()
-                            clearInterval(openTimer)
-                            openTimer = undefined
-                        }
-                    }, 100)
+                    res = { aEl, infoBoxEl }
                 }
+                return res
+            }
+
+            el.addEventListener("click", async event => {
+                if (!document.querySelector(".footnote-infobox")) {
+                    // No infobox exists, show it
+                    event.preventDefault()
+                    await openInfoBox(event)
+                }
+            })
+            el.addEventListener("mouseover", async event => {
+                let { aEl, infoBoxEl } = await openInfoBox(event)
+
+                openTimer = setInterval(_ => {
+                    if (openTimer && !aEl.matches(":hover") && !infoBoxEl.matches(":hover")) {
+                        infoBoxEl.remove()
+                        clearInterval(openTimer)
+                        openTimer = undefined
+                    }
+                }, 100)
             })
         })
     </script>
