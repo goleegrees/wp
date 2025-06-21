@@ -22,6 +22,8 @@
     </main>
     <footer class="main-footer"></footer>
     <script>
+        document.querySelector(".main-nav").addEventListener("click", event => event.stopPropagation())
+
         document.addEventListener("click", event => {
             // Close all infoboxes
             document.querySelectorAll(".footnote-infobox").forEach(el => el.remove())
