@@ -268,9 +268,9 @@ try {
                 let contentItem = allContent[shortFilePath]
                 if (contentItem) {
                     let contentRows = contentItem.data
-                        .split(/[\r\n|\n|\r]/)
+                        .split(/(?:\r\n\r\n|[\n]{2}|[\r]{2})/)
                         .filter(x => x.trim())
-                        .map(x => x.trim())
+                        .map(x => x.trim().replace(/(?:\r\n|\n|\r)/g, "<br>"))
                     let htmlContent = contentRows
                         .map(row => row
                             .replace(/\[\^([0-9]+?)\]:(.*)/g, '<li id="footnote$1">OL$2</li>')
