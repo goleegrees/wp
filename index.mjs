@@ -307,9 +307,9 @@ try {
                         contentTemplate = templates["_default-dictionary-content.html"]
                     }
     
-                    let htmlBreadcrumbs = `<section class="breadcrumbs"><a href="/">Hjelmsby och Hjelmsberg</a> | ${contentItem.contentType}</section>`
+                    let htmlBreadcrumbs = `<section class="breadcrumbs"><a href="/">Hjälm och Hjälmsberg</a> | ${contentItem.contentType}</section>`
                     if (contentItem.name.indexOf("_index") !== 0) {
-                        htmlBreadcrumbs = `<section class="breadcrumbs"><a href="/">Hjelmsby och Hjelmsberg</a> | <a href="/${contentItem.contentTypeSlug}">${contentItem.contentType}</a> | ${contentItem.name}</section>`
+                        htmlBreadcrumbs = `<section class="breadcrumbs"><a href="/">Hjälm och Hjälmsberg</a> | <a href="/${contentItem.contentTypeSlug}">${contentItem.contentType}</a> | ${contentItem.name}</section>`
                     }
     
                     let htmlContentIndex = ""
