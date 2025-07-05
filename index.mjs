@@ -268,8 +268,7 @@ try {
                 let contentItem = allContent[shortFilePath]
                 if (contentItem) {
                     let contentRows = contentItem.data
-                        .split(/(\r\n|\n|\r)/)
-                        .filter(x => x.trim())
+                        .split(/(?:\r\n|\n|\r)/)
                         .map(x => x.trim())
                     let htmlContent = contentRows
                         .map(row => row
@@ -296,6 +295,7 @@ try {
                             .replace(/((?:<li.*?>UL.*?<\/li>(?:\n|$))+)/, "<ul>$1</ul>")
                             .replace(/((?:<li.*?>OL.*?<\/li>(?:\n|$))+)/, "<ol>$1</ol>")
                             .replace(/(<li.*?>)(?:OL|UL)/g, "$1")
+                            .replace(/<\/p>\n<p>/g, "<br>")
         
                     let contentTemplate = templates["_default-content.html"]
 
