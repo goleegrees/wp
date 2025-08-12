@@ -184,6 +184,7 @@ blockquote::after {
     right: 1rem;
     bottom: -3rem;
     font-family: var(--font2);
+    pointer-events: none;
 }
 
 .image-attribution {
@@ -195,7 +196,8 @@ blockquote::after {
 .footnote-infobox {
     position: absolute;
     padding: 0.5rem;
-    background-color: var(--accent-color1);
+    background-color: var(--accent-color3);
+    border: solid 1px black;
     max-width: 50vw;
     transition: opacity 0.5s;
 }
