@@ -167,6 +167,7 @@ blockquote {
     margin: 1rem;
     position: relative;
     background-color: var(--accent-color2);
+    border: solid 1px black;
 }
 
 blockquote::before {
