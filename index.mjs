@@ -323,6 +323,7 @@ try {
                                     htmlContentIndex += '    <section class="index-card">'
                                     htmlContentIndex += `      <img class="inline-image" src="${indexItem.settings.featured_image}">`
                                     htmlContentIndex += `      <h3>${indexItem.settings.title}</h3>`
+                                    htmlContentIndex += "      <p>Klicka för att läsa mer.</p>"
                                     htmlContentIndex += "    </section>"
                                     htmlContentIndex += "  </a>"
                                 }
