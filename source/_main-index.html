@@ -32,9 +32,10 @@
             document.querySelector(".main-nav").childNodes[0].open = false 
         })
 
-        document.querySelectorAll(".footnote-link").forEach(el => {
+                document.querySelectorAll(".footnote-link").forEach(el => {
             let infoBoxEl
             let openTimer
+            let blockMouseOverEventHandling = false
 
             let openInfoBox = async event => {
                 let res
@@ -71,6 +72,11 @@
                 return res
             }
 
+            el.addEventListener("touchend", async event => {
+                // Looks like we are on touch device. 
+                // We don't want any mouse over events, thanks...
+                blockMouseOverEventHandling = true
+            })
             el.addEventListener("click", async event => {
                 let infoBoxEl = document.querySelector(".footnote-infobox")
                 let aEl = event.target
@@ -91,23 +97,26 @@
                 }
             })
             el.addEventListener("mouseover", async event => {
-                let openInfoBoxResponse = await openInfoBox(event)
-                if (openInfoBoxResponse) {
-                    let { aEl, infoBoxEl } = openInfoBoxResponse
+                if (!blockMouseOverEventHandling) {
+                    let openInfoBoxResponse = await openInfoBox(event)
+                    if (openInfoBoxResponse) {
+                        let { aEl, infoBoxEl } = openInfoBoxResponse
 
-                    openTimer = setInterval(_ => {
-                        if (openTimer && !aEl.matches(":hover") && !infoBoxEl.matches(":hover")) {
-                            infoBoxEl.remove()
-                            clearInterval(openTimer)
-                            openTimer = undefined
-                        }
-                    }, 100)
+                        openTimer = setInterval(_ => {
+                            if (openTimer && !aEl.matches(":hover") && !infoBoxEl.matches(":hover")) {
+                                infoBoxEl.remove()
+                                clearInterval(openTimer)
+                                openTimer = undefined
+                            }
+                        }, 100)
+                    }
                 }
             })
         })
         document.querySelectorAll('a[href*="ordbok"]').forEach(el => {
             let infoBoxEl
             let openTimer
+            let blockMouseOverEventHandling = false
 
             let openInfoBox = async event => {
                 let res
@@ -144,6 +153,11 @@
                 return res
             }
 
+            el.addEventListener("touchend", async event => {
+                // Looks like we are on touch device. 
+                // We don't want any mouse over events, thanks...
+                blockMouseOverEventHandling = true
+            })
             el.addEventListener("click", async event => {
                 let infoBoxEl = document.querySelector(".footnote-infobox")
                 let aEl = event.target
@@ -164,17 +178,19 @@
                 }
             })
             el.addEventListener("mouseover", async event => {
-                let openInfoBoxResponse = await openInfoBox(event)
-                if (openInfoBoxResponse) {
-                    let { aEl, infoBoxEl } = openInfoBoxResponse
+                if (!blockMouseOverEventHandling) {
+                    let openInfoBoxResponse = await openInfoBox(event)
+                    if (openInfoBoxResponse) {
+                        let { aEl, infoBoxEl } = openInfoBoxResponse
 
-                    openTimer = setInterval(_ => {
-                        if (openTimer && !aEl.matches(":hover") && !infoBoxEl.matches(":hover")) {
-                            infoBoxEl.remove()
-                            clearInterval(openTimer)
-                            openTimer = undefined
-                        }
-                    }, 100)
+                        openTimer = setInterval(_ => {
+                            if (openTimer && !aEl.matches(":hover") && !infoBoxEl.matches(":hover")) {
+                                infoBoxEl.remove()
+                                clearInterval(openTimer)
+                                openTimer = undefined
+                            }
+                        }, 100)
+                    }
                 }
             })
         })

@@ -216,3 +216,7 @@ blockquote::after {
 .footnote-link:hover {
     text-decoration: underline;
 }
+
+a {
+    word-break: break-word;
+}
