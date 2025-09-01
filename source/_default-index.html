@@ -3,13 +3,21 @@
     <title>{{title}}</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="{{title}}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://hielmbygden.se{{urlPath}}" />
+    <meta property="og:image" content="{{featured_image_url}}" />
+    <meta name="twitter:title" content="{{title}}">
+    <meta name="twitter:description" content="{{subtitle}}">
+    <meta name="twitter:image" content="{{featured_image_url}}">
+    <meta name="twitter:card" content="summary_large_image">
     <link href="/main.css" rel="stylesheet" />
 </head>
 <body>
     <header class="main-navbar__container">
         <section class="main-navbar">
             <section class="main-navbar__title">
-                <a class="root-crumb--alone breadcrumb-item" href="/">Hjälm och Hjälmsberg</a>
+                <a class="root-crumb--alone breadcrumb-item" href="/">Hielmbygden</a>
             </section>
             {{main-nav}}
         </section>

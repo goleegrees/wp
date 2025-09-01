@@ -307,9 +307,9 @@ try {
                         contentTemplate = templates["_default-dictionary-content.html"]
                     }
     
-                    let htmlBreadcrumbs = `<section class="breadcrumbs"><a href="/">Hjälm och Hjälmsberg</a> | ${contentItem.contentType}</section>`
+                    let htmlBreadcrumbs = `<section class="breadcrumbs"><a href="/">Hielmbygden</a> | ${contentItem.contentType}</section>`
                     if (contentItem.name.indexOf("_index") !== 0) {
-                        htmlBreadcrumbs = `<section class="breadcrumbs"><a href="/">Hjälm och Hjälmsberg</a> | <a href="/${contentItem.contentTypeSlug}">${contentItem.contentType}</a> | ${contentItem.name}</section>`
+                        htmlBreadcrumbs = `<section class="breadcrumbs"><a href="/">Hielmbygden</a> | <a href="/${contentItem.contentTypeSlug}">${contentItem.contentType}</a> | ${contentItem.name}</section>`
                     }
     
                     let htmlContentIndex = ""
@@ -354,11 +354,14 @@ try {
     
                     let html = contentTemplate
                         .replace(/{{title}}/g, contentItem.settings.title)
+                        .replace(/{{subtitle}}/g, contentItem.settings.subtitle ?? "")
+                        .replace(/{{featured_image_url}}/g, contentItem.settings.featured_image)
                         .replace(/{{featured_image}}/g, featuredImageHtml)
                         .replace(/{{content}}/g, htmlContent)
                         .replace(/{{main-nav}}/g, htmlMainNav)
                         .replace(/{{breadcrumbs}}/g, htmlBreadcrumbs)
                         .replace(/{{content-index}}/g, htmlContentIndex)
+                        .replace(/{{urlPath}}/g, "/" + contentItem.contentTypeSlug + (contentItem.nameSlug === "_index" ? "" : "/" + contentItem.nameSlug))
 
                     if (!contentItem.settings.draft || (!doPublish && contentItem.settings.draft)) {
                         let outPath = pathJoin(...[rootOutPath, contentItem.contentTypeSlug, contentItem.nameSlug].map(x => x.trim()))
