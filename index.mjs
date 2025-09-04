@@ -274,7 +274,10 @@ try {
                         .map(row => row
                             .replace(/\[\^([0-9]+?)\]:(.*)/g, '<li id="footnote$1">OL$2</li>')
                             .replace(/\[\^([0-9]+?)\]/g, '<a class="footnote-link" href="#footnote$1"><sup>[$1]</sup></a>')
-                            .replace(/!\[([^\]]+?)\]\((.+?)(?: "?(.+?)"?)?\)/, '<img class="inline-image" src="$2" alt="$1" title="$3">')
+                            .replace(/!\[([^\]]+?)\]\((.+?)(?: "?(.+?)"?)?\)TXT:([^|]+)\|ATTR:([^|]+)\|/, (ms, g1, g2, g3, g4, g5) => `<section class="inline-image__container"><img class="inline-image" src="${g2}" alt="${g1}" title="${g3}"><section class="image-text">${g4}<details><summary>ℹ️</summary><section class="image-attribution">${g5.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>')}</section></details></section></section>`)
+                            .replace(/!\[([^\]]+?)\]\((.+?)(?: "?(.+?)"?)?\)TXT:([^|]+)\|/, (ms, g1, g2, g3, g4) => `<section class="inline-image__container"><img class="inline-image" src="${g2}" alt="${g1}" title="${g3}"><section class="image-text">${g4}</section></section>`)
+                            .replace(/!\[([^\]]+?)\]\((.+?)(?: "?(.+?)"?)?\)ATTR:([^|]+)\|/, (ms, g1, g2, g3, g4) => `<section class="inline-image__container"><img class="inline-image" src="${g2}" alt="${g1}" title="${g3}"><section class="image-text"><details><summary>ℹ️</summary><section class="image-attribution">${g4.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>')}</section></details></section></section>`)
+                            .replace(/!\[([^\]]+?)\]\((.+?)(?: "?(.+?)"?)?\)/, '<section class="inline-image__container"><img class="inline-image" src="$2" alt="$1" title="$3"></section>')
                             .replace(/\[([^\]]+?)\]\((.+?)\)/g, '<a href="$2">$1</a>')
                             .replace(/^ATTR:(.*)$/, '<section class="image-attribution">$1</section>')
                             .replace(/##### (.*)$/, "<h5>$1</h5>")
@@ -335,7 +338,9 @@ try {
                     let featuredImageHtml = '<section class="banner-image__container">'
                     featuredImageHtml += `<img class="banner-image" src="${contentItem.settings.featured_image}" alt="${contentItem.settings.featured_image_alt}">`
                     if (contentItem.settings.featured_image_attribution) {
-                        featuredImageHtml += `  <section class="image-attribution">${contentItem.settings.featured_image_attribution.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>')}</section>`
+                        featuredImageHtml += `  <section class="image-text">${contentItem.settings.featured_image_text || ""}<details><summary>ℹ️</summary><section class="image-attribution">${contentItem.settings.featured_image_attribution.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>')}</section></details></section>`
+                    } else if (contentItem.settings.featured_image_text) {
+                        featuredImageHtml += `  <section class="image-text">${contentItem.settings.featured_image_text}</section>`
                     }
                     featuredImageHtml += '</section>'
                     if (contentItem.settings.featured_image_narrow) {
