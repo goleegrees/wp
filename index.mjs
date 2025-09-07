@@ -95,14 +95,14 @@ try {
                     let contentTypeSlug = contentType
                         .replace(/ /g, "-")
                         .toLowerCase()
-                        .replace(/[åä]/,"a")
-                        .replace(/[ö]/,"o")
+                        .replace(/[åä]/g,"a")
+                        .replace(/[ö]/g,"o")
                     let name = contentMatch[2]
                     let nameSlug = name
                         .replace(/ /g, "-")
                         .toLowerCase()
-                        .replace(/[åä]/,"a")
-                        .replace(/[ö]/,"o")
+                        .replace(/[åä]/g,"a")
+                        .replace(/[ö]/g,"o")
         
                     let filePath = pathJoin(...[rootContentPath, shortFilePath].map(x => x.trim()))
                     let content = await fs.readFile(filePath, "utf-8")
@@ -170,16 +170,16 @@ try {
             let htmlMainNav = '<section class="main-nav"><details><summary>Innehåll</summary>' + nav.reduce((html, navItem) => {
                 let contentTypeSlug = navItem.subject.replace(/ /g, "-")
                     .toLowerCase()
-                    .replace(/[åä]/,"a")
-                    .replace(/[ö]/,"o")
+                    .replace(/[åä]/g,"a")
+                    .replace(/[ö]/g,"o")
                 html += '<section class="main-nav__content-type">'
                 html += '  <details>'
                 html += '    <summary><a href="/' + contentTypeSlug + '">' + navItem.subject + '</a></summary>'
                 for (const pageItemName of navItem.items) {
                     let nameSlug = pageItemName.replace(/ /g, "-")
                         .toLowerCase()
-                        .replace(/[åä]/,"a")
-                        .replace(/[ö]/,"o")
+                        .replace(/[åä]/g,"a")
+                        .replace(/[ö]/g,"o")
                     html += '    <section class="main-nav__content-item">'
                     html += '      <a href="/' + contentTypeSlug + '/' + nameSlug + '">' + pageItemName + '</a>'
                     html += '    </section>'
@@ -200,8 +200,8 @@ try {
                     let pathSlug = path
                         .replace(/ /g, "-")
                         .toLowerCase()
-                        .replace(/[åä]/,"a")
-                        .replace(/[ö]/,"o")
+                        .replace(/[åä]/g,"a")
+                        .replace(/[ö]/g,"o")
         
                     // Files that should be copied as they are, possible with cache busting
                     let srcFilePath = pathJoin(...["source", path, filename + "." + extension].filter(x => x.trim()))
@@ -234,8 +234,8 @@ try {
                     let pathSlug = path
                         .replace(/ /g, "-")
                         .toLowerCase()
-                        .replace(/[åä]/,"a")
-                        .replace(/[ö]/,"o")
+                        .replace(/[åä]/g,"a")
+                        .replace(/[ö]/g,"o")
         
                     // Files that should be copied almost as they are, possible with cache busting
                     let srcFilePath = pathJoin(...["source", path, filename + "." + extension].filter(x => x.trim()))
