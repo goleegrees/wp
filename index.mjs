@@ -295,8 +295,8 @@ try {
                             .replace(/---/g, "<hr>"))
                         .join("\n")
                             .replace(/<\/blockquote>\n<blockquote>/gs, "")
-                            .replace(/((?:<li.*?>UL.*?<\/li>(?:\n|$))+)/, "<ul>$1</ul>")
-                            .replace(/((?:<li.*?>OL.*?<\/li>(?:\n|$))+)/, "<ol>$1</ol>")
+                            .replace(/((?:<li.*?>UL.*?<\/li>(?:\n|$))+)/g, "<ul>$1</ul>")
+                            .replace(/((?:<li.*?>OL.*?<\/li>(?:\n|$))+)/g, "<ol>$1</ol>")
                             .replace(/(<li.*?>)(?:OL|UL)/g, "$1")
                             .replace(/<\/p>\n<p>/g, "<br>")
         
