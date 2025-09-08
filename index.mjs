@@ -385,6 +385,8 @@ try {
                     }
                 }
             }
+
+            await fs.writeFile(pathJoin(rootOutPath, "CNAME"), "hielmbygden.se", "utf-8")
         
             console.log("Done")
         
