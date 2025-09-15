@@ -118,8 +118,7 @@ try {
                                 throw new Error(rowAndmatch.row + " i " + name + " ser lite fel ut.")
                             }
                             let strValue = match[2].trim()
-                                .replace(/^['"]/g, "")
-                                .replace(/['"]$/g, "")
+                                .replace(/^['"](.*)['"]$/g, "$1")
                             acc[match[1].trim()] = strValue.match(/(?:true|false)/i) ?
                                 !!strValue.match(/true/i) :
                                 strValue
