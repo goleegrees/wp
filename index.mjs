@@ -318,7 +318,9 @@ try {
                     if (contentItem.name.indexOf("_index") === 0) {
                         let collection = contentPerType[contentItem.contentTypeSlug]
                         if (collection) {
-                            htmlContentIndex += "<section>"
+                            htmlContentIndex += '<section class="content-index">'
+                            htmlContentIndex += "<hr />"
+                            htmlContentIndex += `<h2>Alla ${contentItem.contentType.toLowerCase()}</h2>`
                             for (const indexItem of collection.filter(x => x.name !== "_index")) {
                                 if (!indexItem.settings.draft || (!doPublish && indexItem.settings.draft)) {
                                     htmlContentIndex += `  <a class="index-card__link-container" href="/${indexItem.contentTypeSlug}/${indexItem.nameSlug}">`

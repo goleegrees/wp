@@ -131,6 +131,10 @@ h2,h3,h4,h5,h6 {
     margin: 0 auto;
 }
 
+.content-index {
+    margin-top: 6.4rem;
+}
+
 .index-card {
     background-color: var(--accent-color2);
     padding: 1rem;
