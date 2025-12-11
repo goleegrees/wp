@@ -236,7 +236,7 @@ a {
 }
 
 .image-text {
-    padding: 0.5rem 0.5rem;
+    padding: 0.2rem 0.5rem;
     font-size: 0.8rem;
 }
 
@@ -247,8 +247,15 @@ a {
     margin-top:0.4rem;
 }
 
+.image-attribution__icon {
+    display: flex;
+    align-items: center;
+    justify-content: right;
+}
+
 .image-text > details > summary {
     list-style-type: none;
-    text-align: right;
     cursor:pointer;
+    display: grid;
+    grid-template-columns: auto 1rem;
 }
