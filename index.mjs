@@ -32,29 +32,31 @@ if (__dirname) {
             let rootContentPath = argv[2]
             let rootOutPath = argv[3]
         
-            server = createServer(async (req, res) => {
-                try {
-                    let url = req.url
-                    let fileEndingMatch = url.match(/\.(css|html)$/)
-                    if (!fileEndingMatch) {
-                        url += (url.charAt(url.length - 1) === "/" ? "" : "/") + "index.html"
+            if (!doPublish) {
+                server = createServer(async (req, res) => {
+                    try {
+                        let url = req.url
+                        let fileEndingMatch = url.match(/\.(css|html)$/)
+                        if (!fileEndingMatch) {
+                            url += (url.charAt(url.length - 1) === "/" ? "" : "/") + "index.html"
+                        }
+                        let data = await fs.readFile(rootOutPath + url)
+                
+                        let contentType = "text/html"
+                        fileEndingMatch = url.match(/\.(css|html)$/)
+                        if (fileEndingMatch && fileEndingMatch[1] === "css") {
+                            contentType = "text/css"
+                        }
+                        res.writeHead(200, { "Content-Type": contentType });
+                        res.end(data);
+                    } catch (err) {
+                        res.writeHead(404);
+                        res.end("Not found");
                     }
-                    let data = await fs.readFile(rootOutPath + url)
+                }).listen(8000)
+            }
             
-                    let contentType = "text/html"
-                    fileEndingMatch = url.match(/\.(css|html)$/)
-                    if (fileEndingMatch && fileEndingMatch[1] === "css") {
-                        contentType = "text/css"
-                    }
-                    res.writeHead(200, { "Content-Type": contentType });
-                    res.end(data);
-                } catch (err) {
-                    res.writeHead(404);
-                    res.end("Not found");
-                }
-            }).listen(8000)
-            
-            while (true) {
+            do {
                 console.log("Rebuilding everything.")
             
                 // Remove everything except possible .git folder
@@ -382,10 +384,12 @@ if (__dirname) {
             
                 console.log("Done")
             
-                console.log("Waiting 10 seconds until next rebuild...")
-            
-                await new Promise(r => setTimeout(r, 10 * 1000))
-            }
+                if (!doPublish) {
+                    console.log("Waiting 10 seconds until next rebuild...")
+                
+                    await new Promise(r => setTimeout(r, 10 * 1000))
+                }
+            } while (!doPublish)
         } else {
             console.error("Det saknas sökvägar för katalog att hämta från och lägga saker i!")
         }
