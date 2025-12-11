@@ -12,6 +12,6 @@
 [X] Ta bort menyn när man klickar bredvid
 [X] Favicon
 [X] Inte ta bort .git-katalog när bygger
-[ ] Smala till bildinforutan
+[X] Smala till bildinforutan
 [ ] Två blanksteg i slutet skapar ny rad.
 [ ] Två enterslag blir nytt stycke och ett enterslag blir samma text
