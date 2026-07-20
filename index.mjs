@@ -276,6 +276,8 @@ if (__dirname) {
                                 .replace(/# (.*)$/, "<h1>$1</h1>")
                                 .replace(/^\* (.*)$/, '<li>UL$1</li>')
                                 .replace(/^[0-9]+\. (.*)$/, '<li>OL$1</li>')
+                                .replace(/^> ?\+ (.*)$/, "<blockquote><li>UL$1</li>\n</blockquote>")
+                                .replace(/^> ?[0-9]+\. (.*)$/, "<blockquote><li>OL$1</li>\n</blockquote>")
                                 .replace(/^>(.*)/, "<blockquote><p>$1</p></blockquote>")
                                 .replace(/^([^<].*)$/, "<p>$1</p>")
                                 .replace(/\*\*\*(.*?)\*\*\*/g, "<strong><em>$1</em></strong>")
